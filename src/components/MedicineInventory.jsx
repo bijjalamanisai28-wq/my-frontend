@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;  // ✅ get backend URL dynamically
 
 export default function MedicineInventory() {
   const [medicines, setMedicines] = useState([]);
@@ -10,14 +11,14 @@ export default function MedicineInventory() {
 
   // Fetch medicines from backend
   useEffect(() => {
-    axios.get("http://localhost:5000/api/medicines")
+    axios.get(`${API_URL}/api/medicines`)
       .then(res => setMedicines(res.data))
       .catch(err => console.error(err));
   }, []);
 
   const addMedicine = () => {
     if (newMedicine && newRack) {
-      axios.post("http://localhost:5000/api/medicines", {
+      axios.post(`${API_URL}/api/medicines`, {
         name: newMedicine,
         rack: newRack,
       })
@@ -84,3 +85,5 @@ export default function MedicineInventory() {
     </div>
   );
 }
+
+
