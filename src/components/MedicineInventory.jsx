@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;  // ✅ get backend URL dynamically
+const API_URL = import.meta.env.VITE_API_URL; // ✅ get backend URL dynamically
 
 export default function MedicineInventory() {
   const [medicines, setMedicines] = useState([]);
@@ -11,22 +10,31 @@ export default function MedicineInventory() {
 
   // Fetch medicines from backend
   useEffect(() => {
-    axios.get(`${API_URL}/api/medicines`)
-      .then(res => setMedicines(res.data))
-      .catch(err => console.error(err));
+    fetch(`${API_URL}/api/medicines`)
+      .then((res) => res.json())
+      .then((data) => setMedicines(data))
+      .catch((err) => console.error("Fetch error:", err));
   }, []);
 
   const addMedicine = () => {
     if (newMedicine && newRack) {
-      axios.post(`${API_URL}/api/medicines`, {
-        name: newMedicine,
-        rack: newRack,
+      fetch(`${API_URL}/api/medicines`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newMedicine,
+          rack: newRack,
+        }),
       })
-      .then(res => setMedicines([...medicines, res.data]))
-      .catch(err => console.error(err));
-
-      setNewMedicine("");
-      setNewRack("");
+        .then((res) => res.json())
+        .then((data) => {
+          setMedicines([...medicines, data]); // update list
+          setNewMedicine("");
+          setNewRack("");
+        })
+        .catch((err) => console.error("Post error:", err));
     }
   };
 
@@ -85,5 +93,3 @@ export default function MedicineInventory() {
     </div>
   );
 }
-
-
